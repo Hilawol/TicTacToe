@@ -1,7 +1,23 @@
 import React, {useState, useEffect} from 'react';
 import Square from "../Square/Square";
 import HistoryBoard from "../HistoryBoard/HistoryBoard";
-import './board.css';
+import { css } from '@emotion/css'
+
+const styles = {
+    containerStyle: css`
+      margin: 20px;
+      display: flex;
+    `,
+    boardStyle: css`
+      margin: 20px;
+      display: grid;
+      width:150px;
+      height: 150px;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      border: 1px solid black;
+    `
+}
 
 //export let players: "X" |"O";
 export let values :  "X" |"O" | "";
@@ -27,7 +43,7 @@ const Board  = () =>{
     const [moves,setMoves] = useState<Move[] | []>([]);
     const [currentPlayer,setCurrentPlayer] = useState<typeof values>("");
     const [currentMove,setCurrentMove] = useState(0);
-    let [gameStatus,setGameStatus] = useState<gameStatus>({gameOver:false, winner:null, winSquares:[]});
+    const [gameStatus,setGameStatus] = useState<gameStatus>({gameOver:false, winner:null, winSquares:[]});
 
     useEffect(()=>{
         setMoves([{nextPlayer:"X",board: initialState, gameStatus: {gameOver:false, winner: null, winSquares:[]}}]);
@@ -35,7 +51,7 @@ const Board  = () =>{
     },[])
 
     const onMoveClick = (e : React.MouseEvent<HTMLButtonElement> ) : void =>{
-        let move:Move = moves[+e.currentTarget.id];
+        const move:Move = moves[+e.currentTarget.id];
         setBoard(move.board);
         setCurrentMove(+e.currentTarget.id);
         setCurrentPlayer(move.nextPlayer);
@@ -93,8 +109,8 @@ const Board  = () =>{
         return newGameStatus;
     };
 
-    return (<div className="container">
-               <div className="board">
+    return (<div className={styles.containerStyle}>
+               <div className={styles.boardStyle}>
                    {board.map((row,rowIndex) => row.map((col,colIndex)=> {
                        return <Square key={rowIndex + "," + colIndex}
                                       id={rowIndex + "," + colIndex}

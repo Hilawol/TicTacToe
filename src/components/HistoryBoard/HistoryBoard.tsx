@@ -1,6 +1,18 @@
 import React from 'react';
 import {Move, gameStatus} from "../Board/Board";
-import './HistoryBoard.css';
+import { css } from '@emotion/css';
+
+const styles = {
+    historyBoardStyle: css`
+      margin: 20px;
+      ul & {
+        padding-inline-start: 20px;
+      }
+      li & {
+        list-style-type: decimal;
+      }
+    `
+}
 
 interface Props {
     moves: Move[] | [],
@@ -12,7 +24,7 @@ interface Props {
 function HistoryBoard({moves, currentPlayer,onMoveClick, gameStatus} : Props) {
 
     return (
-        <div className="historyBoard">
+        <div className={styles.historyBoardStyle}>
             {gameStatus.winner?
                 <div> Winner is: {gameStatus.winner} </div>:
                 gameStatus.gameOver?
@@ -20,7 +32,7 @@ function HistoryBoard({moves, currentPlayer,onMoveClick, gameStatus} : Props) {
                     <div>Next Player: {currentPlayer}</div>
             }
 
-            <ul className="moves">
+            <ul>
                 {moves.map((move,index) => {
                         return(<li key={index}>
                                     <button type="button" id={index.toString()} onClick={onMoveClick}>
