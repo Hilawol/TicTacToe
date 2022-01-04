@@ -1,0 +1,18 @@
+
+
+button {
+    background-color: transparent;
+    border: 1px solid black;
+}
+
+.winner {
+    color: red;
+}
+
+.btn {
+
+}
+
+.gameover {
+    background-color: lightgray;
+}
