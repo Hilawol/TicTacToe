@@ -19,35 +19,34 @@ const styles = {
     `
 }
 
-//export let players: "X" |"O";
-export let values :  "X" |"O" | "";
-type BoardGame = [[typeof values,typeof values,typeof values],
-                    [typeof values,typeof values,typeof values],
-                    [typeof values,typeof values,typeof values]];
+export enum values {
+    X = "X",
+    O = "O",
+}
+
+type BoardGame = [values, values,values][];
 export type Move = {
-    nextPlayer: typeof values,
+    nextPlayer: values,
     board: BoardGame,
     gameStatus:gameStatus,
 }
-
 export type gameStatus = {
     gameOver: boolean,
     winSquares: string[],
-    winner: string | null,
+    winner?: values,
 }
 
-const Board  = () =>{
+const Board: React.FC  = () =>{
 
-    const initialState : BoardGame = [["","",""],["","",""],["","",""]];
+    const initialState : BoardGame = Array(3).fill(Array(3).fill(undefined));
     const [board ,setBoard ] = useState(initialState);
-    const [moves,setMoves] = useState<Move[] | []>([]);
-    const [currentPlayer,setCurrentPlayer] = useState<typeof values>("");
+    const [moves,setMoves] = useState<Move[]>([]);
+    const [currentPlayer,setCurrentPlayer] = useState(values.X);
     const [currentMove,setCurrentMove] = useState(0);
-    const [gameStatus,setGameStatus] = useState<gameStatus>({gameOver:false, winner:null, winSquares:[]});
+    const [gameStatus,setGameStatus] = useState<gameStatus>({gameOver:false, winSquares:[]});
 
     useEffect(()=>{
-        setMoves([{nextPlayer:"X",board: initialState, gameStatus: {gameOver:false, winner: null, winSquares:[]}}]);
-        setCurrentPlayer("X");
+        setMoves([{nextPlayer:currentPlayer,board: initialState, gameStatus: {gameOver:false,  winSquares:[]}}]);
     },[])
 
     const onMoveClick = (e : React.MouseEvent<HTMLButtonElement> ) : void =>{
@@ -61,30 +60,28 @@ const Board  = () =>{
     const onSquareClick = (e : React.MouseEvent<HTMLButtonElement> ) : void => {
         if (gameStatus.winner || gameStatus.gameOver) return;
         const squarePosition = e.currentTarget.id.split(",").map(value => +value);
-        const newBoard :BoardGame = JSON.parse(JSON.stringify(board));
+        const newBoard :BoardGame = board.map(arr => arr.slice()) as BoardGame;
         newBoard[squarePosition[0]][squarePosition[1]]=currentPlayer;
         setBoard(newBoard);
-        if (currentPlayer !== ""){ //TODO:Ask
-            let nextPlayer:typeof values = currentPlayer === "X"? "O": "X";
-            setCurrentPlayer(nextPlayer);
-            setCurrentMove((currentMove)=>currentMove+1);
-            const newGameStatus: gameStatus= calculateGameStatus(newBoard,currentMove+1);
-            const newMove : Move = {nextPlayer:nextPlayer,board:newBoard, gameStatus: newGameStatus} ;
-            let newMoves = [...moves];
-            if (currentMove < moves.length){
-               newMoves = newMoves.slice(0,currentMove+1);
-            }
-            newMoves.push(newMove);
-            setMoves(newMoves);
+        let nextPlayer = currentPlayer === values.X? values.O: values.X;
+        setCurrentPlayer(nextPlayer);
+        setCurrentMove((currentMove)=>currentMove+1);
+        const newGameStatus: gameStatus= calculateGameStatus(newBoard,currentMove+1);
+        const newMove : Move = {nextPlayer:nextPlayer,board:newBoard, gameStatus: newGameStatus} ;
+        let newMoves = [...moves];
+        if (currentMove < moves.length){
+           newMoves = newMoves.slice(0,currentMove+1);
         }
+        newMoves.push(newMove);
+        setMoves(newMoves);
     };
 
     const calculateGameStatus = (board:BoardGame,currentMove:number) => {
         let newGameStatus :gameStatus = {...gameStatus};
 
         const checkSquares =([a,b,c] : number[][])=>{
-            if (board[a[0]][a[1]]!=="" && board[a[0]][a[1]]=== board[b[0]][b[1]] && board[a[0]][a[1]]===board[c[0]][c[1]]){
-                newGameStatus = { winner:board[a[0]][a[1]], gameOver:false, winSquares:[a.join(","),b.join(","),c.join(",")]};
+            if (board[a[0]][a[1]]!== undefined && board[a[0]][a[1]]=== board[b[0]][b[1]] && board[a[0]][a[1]]===board[c[0]][c[1]]){
+                newGameStatus = { winner:board[a[0]][a[1]] , gameOver:false, winSquares:[a.join(","),b.join(","),c.join(",")]};
                 setGameStatus(newGameStatus);
                 return true;
             }
@@ -117,7 +114,7 @@ const Board  = () =>{
                                       value={board[rowIndex][colIndex]}
                                       currentPlayer={currentPlayer}
                                       onSquareClick={onSquareClick}
-                                      winner={gameStatus.winSquares.includes(`${rowIndex},${colIndex}`)? gameStatus.winner: null}
+                                      winner={gameStatus.winSquares.includes(`${rowIndex},${colIndex}`)? gameStatus.winner: undefined}
                                       gameOver={gameStatus.gameOver}/>
                    }))}
                </div>

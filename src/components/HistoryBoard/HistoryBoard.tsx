@@ -1,5 +1,5 @@
 import React from 'react';
-import {Move, gameStatus} from "../Board/Board";
+import {Move, gameStatus, values} from "../Board/Board";
 import { css } from '@emotion/css';
 
 const styles = {
@@ -16,12 +16,12 @@ const styles = {
 
 interface Props {
     moves: Move[] | [],
-    currentPlayer: string,
+    currentPlayer: values.X | values.O,
     gameStatus: gameStatus,
     onMoveClick(e: React.MouseEvent<HTMLButtonElement>): void
 }
 
-function HistoryBoard({moves, currentPlayer,onMoveClick, gameStatus} : Props) {
+const HistoryBoard:React.FC<Props> = ({moves, currentPlayer,onMoveClick, gameStatus}) => {
 
     return (
         <div className={styles.historyBoardStyle}>

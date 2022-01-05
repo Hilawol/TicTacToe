@@ -18,16 +18,16 @@ const styles = {
 interface Props {
     onSquareClick (e: React.MouseEvent<HTMLButtonElement>): void;
     id: string,
-    currentPlayer: typeof values
-    value: typeof values,
-    winner: string | null,
+    currentPlayer: values.X | values.O,
+    value: values,
+    winner ?: values.X | values.O,
     gameOver: boolean,
 }
 
-const Square = ({onSquareClick, id,value,winner,gameOver} : Props) =>{
+const Square: React.FC<Props> = ({value, winner, onSquareClick, id,gameOver}) =>{
 
     const onClick = (e: React.MouseEvent<HTMLButtonElement>) =>{
-        if(value !== "") return;
+        if(value !== undefined) return;
         onSquareClick(e);
     }
 
